@@ -58,6 +58,7 @@ void Walls(){
     }
       
         if(maze[Y][X]==0) maze[Y][X] =2;
+        else if(maze[Y][X]==1) maze[Y][X] =1;
         else maze[Y][X] =0;
     }
 
@@ -70,6 +71,7 @@ void Walls(){
     }
 
         if(maze[Y][X]==0) maze[Y][X] =3;
+        else if(maze[Y][X]==1) maze[Y][X] =1;
         else maze[Y][X] =0;
         
     }
