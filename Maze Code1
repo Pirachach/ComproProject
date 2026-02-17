@@ -5,7 +5,7 @@
 using namespace std;
 
 const int width =10;
-const int height =20;
+const int height =10;
 int X=0, Y=0;
 int maze[height][width] = {0};
 char key;
@@ -14,40 +14,66 @@ bool start=true;
 void DrawMap(){
     system("cls");
     cout << "          ---Build Your MAZE---\n";
-    cout << "WASD : Move | SPACE : Wall | Q : Done\n\n" << endl;
+    cout << "WASD : Move | SPACE : Wall | Q : Done | F : START | E : END \n\n" << endl;
 
     for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
             if (i== Y && j == X) cout << "+ "; //Cursor
             
             else if (maze[i][j] == 1) cout << "# "; //Wall
-           
-            else cout << ". " ; //empty space
-
-
+            else if (maze[i][j] == 2) cout << "S "; //Start
+            else if (maze[i][j] == 3) cout << "E "; //End
+            else cout << ". ";
+          
         }
         cout << endl;
     }
 }
 
-void Input(){
+void Move(){
     if (_kbhit()){
   key = _getch();
    if (key == 'q') start = false;
   
    else if (key == 'w' && Y >0) Y--;
-   else if(key == 'a' && X >0) X--;
+   else if (key == 'a' && X >0) X--;
    else if (key == 's' && Y < height-1) Y++;
    else if (key == 'd' && X < width-1) X++;
     }
 }
 
-void Logic(){
+void Walls(){
 
     if (key == ' ') {
         if(maze[Y][X]==0) maze[Y][X] =1;
         else maze[Y][X]=0;
     }
+    
+    else if (key == 'f'){
+     
+        for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+       if(maze[i][j]==2) maze[i][j] =0;
+      }
+    }
+      
+        if(maze[Y][X]==0) maze[Y][X] =2;
+        else maze[Y][X] =0;
+    }
+
+    else if (key == 'e'){
+     
+        for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+       if(maze[i][j]==3) maze[i][j] =0;
+      }
+    }
+
+        if(maze[Y][X]==0) maze[Y][X] =3;
+        else maze[Y][X] =0;
+        
+    }
+
       key ='\0';
 }
 
@@ -55,8 +81,8 @@ int main(){
  
     while(start){
         DrawMap();
-        Input();
-        Logic();
+        Move();
+        Walls();
         Sleep(10);
 
     }
