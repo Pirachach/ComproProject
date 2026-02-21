@@ -9,22 +9,28 @@ const int height =10;
 int X=0, Y=0;
 int maze[height][width] = {0};
 char key;
-bool start=true;
+bool Running=true;
+
+
+void gotoxy(int x, int y) {
+    COORD c = { (short)x, (short)y };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
 
 void DrawMap(){
-    system("cls");
+    gotoxy(0, 0);
     cout << "          ---Build Your MAZE---\n";
-    cout << "WASD : Move | SPACE : Wall | Q : Done | F : START | E : END \n\n" << endl;
+    cout << "WASD : Move | SPACE : Wall | X : Done | Q : START | E : END \n\n" << endl;
 
     for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
             if (i== Y && j == X) cout << "+ "; //Cursor
-            
+            else if (maze[i][j] == 0) cout << ". "; //empty
             else if (maze[i][j] == 1) cout << "# "; //Wall
             else if (maze[i][j] == 2) cout << "S "; //Start
             else if (maze[i][j] == 3) cout << "E "; //End
-            else cout << ". ";
-          
+            else if (maze[i][j] == 4) cout << "* "; //path
+            
         }
         cout << endl;
     }
@@ -33,23 +39,23 @@ void DrawMap(){
 void Move(){
     if (_kbhit()){
   key = _getch();
-   if (key == 'q') start = false;
+   if (key == 'x') Running = false;
   
    else if (key == 'w' && Y >0) Y--;
    else if (key == 'a' && X >0) X--;
-   else if (key == 's' && Y < height-1) Y++;
-   else if (key == 'd' && X < width-1) X++;
+   else if (key == 's' && Y < height) Y++;
+   else if (key == 'd' && X < width) X++;
     }
 }
 
 void Walls(){
-
+  // logic for wall
     if (key == ' ') {
         if(maze[Y][X]==0) maze[Y][X] =1;
         else maze[Y][X]=0;
     }
-    
-    else if (key == 'f'){
+  // logic for Start
+    else if (key == 'q'){
      
         for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
@@ -61,7 +67,7 @@ void Walls(){
         else if(maze[Y][X]==1) maze[Y][X] =1;
         else maze[Y][X] =0;
     }
-
+  // logic for Exist
     else if (key == 'e'){
      
         for (int i = 0; i < height; i++){
@@ -79,15 +85,35 @@ void Walls(){
       key ='\0';
 }
 
+bool SolveMaze(){
+    int StartX, StartY;
+    if(int i=0;i< height;i++){
+        if(int j=0;j< width;j++){
+            if(maze[i][j] ==2) {StartY=j; StartX=i;}
+
+        }
+    }
+    
+}
+
+bool SolveMazeRec(int r,int c){
+    if()
+}
+
+bool isSafe(int r,int c){
+    return(r<height && c<width && maze[r][c]==4)
+}
 int main(){
  
-    while(start){
+    while(Running){
         DrawMap();
         Move();
         Walls();
         Sleep(10);
 
     }
-    system("cls");
-   return 0;
+    
+    cout << "Maze Finished!\n" ;
+    
+    
 }
