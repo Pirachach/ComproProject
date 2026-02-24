@@ -1,16 +1,17 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-const int width =10;
-const int height =10;
+const int width =6;
+const int height =6;
 int X=0, Y=0;
 int maze[height][width] = {0};
 char key;
 bool Running=true;
-
 
 void gotoxy(int x, int y) {
     COORD c = { (short)x, (short)y };
@@ -32,14 +33,14 @@ void DrawMap(){
             else if (maze[i][j] == 4) cout << "* "; //path
             
         }
-        cout << endl;
+        cout <<" "<< endl;
     }
 }
 
 void Move(){
     if (_kbhit()){
   key = _getch();
-   if (key == 'x') Running = false;
+   if (key == 'x' ) Running = false;
   
    else if (key == 'w' && Y >0) Y--;
    else if (key == 'a' && X >0) X--;
@@ -62,10 +63,8 @@ void Walls(){
        if(maze[i][j]==2) maze[i][j] =0;
       }
     }
+    maze[Y][X] =2;
       
-        if(maze[Y][X]==0) maze[Y][X] =2;
-        else if(maze[Y][X]==1) maze[Y][X] =1;
-        else maze[Y][X] =0;
     }
   // logic for Exist
     else if (key == 'e'){
@@ -76,44 +75,84 @@ void Walls(){
       }
     }
 
-        if(maze[Y][X]==0) maze[Y][X] =3;
-        else if(maze[Y][X]==1) maze[Y][X] =1;
-        else maze[Y][X] =0;
+    maze[Y][X] =3;
         
     }
 
       key ='\0';
 }
 
-bool SolveMaze(){
-    int StartX, StartY;
-    if(int i=0;i< height;i++){
-        if(int j=0;j< width;j++){
-            if(maze[i][j] ==2) {StartY=j; StartX=i;}
+////About AI find an Exist////
 
+// Direction 
+string dir ="DLRU";
+int dr[4]= {1, 0, 0, -1};
+int dc[4]= {0, -1, 1, 0};
+
+//เช็คว่าไปได้ไหม
+bool isValid(int r,int c){
+    return (r >= 0 && c >= 0 && r < height && c < width && maze[r][c] != 1 && maze[r][c] != 4 );
+}
+
+
+
+bool findPath(int r, int c){
+    if(maze[r][c] == 3) return true; //Found Exist 
+
+    int temp = maze[r][c];
+    if (maze[r][c] != 2)maze[r][c] = 4; // ทำเครื่องหมายทางผ่าน (*) ยกเว้นจุดเริ่ม
+
+    // --- ส่วนแสดงผล Real-time ---
+    DrawMap();
+    Sleep(100); // หน่วงเวลา 0.1 วินาทีให้เห็นการขยับ
+    // ---------------------------
+
+    for (int i = 0; i < 4; i++) {
+        int nr = r + dr[i];
+        int nc = c + dc[i];
+
+        if (isValid(nr, nc)) {
+            if (findPath(nr, nc)) return true;
         }
     }
-    
+  
+    // Backtrack: ถ้าทางนี้ไม่ใช่ ให้คืนค่าเดิม (ยกเว้นจุดเริ่ม)
+    if (temp != 2) {
+        maze[r][c] = 0; 
+        DrawMap();   // วาดใหม่เพื่อให้เห็นตอนมันถอยหลัง
+        Sleep(50);
+    }
+    return false;
 }
 
-bool SolveMazeRec(int r,int c){
-    if()
-}
 
-bool isSafe(int r,int c){
-    return(r<height && c<width && maze[r][c]==4)
-}
+
 int main(){
- 
+  int startR =-1,startC=-1;
     while(Running){
         DrawMap();
         Move();
         Walls();
-        Sleep(10);
+        Sleep(30);
 
     }
     
-    cout << "Maze Finished!\n" ;
     
-    
+    // ค้นหาจุดเริ่มต้น S เพื่อเริ่มแก้
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (maze[i][j] == 2) { startR = i; startC = j; break; }
+        }
+    }
+
+    system("cls");
+    if (startR != -1 && findPath(startR, startC)) {
+        DrawMap();
+        cout << "\nSUCCESS: AI found the way!\n";
+    } else {
+        DrawMap();
+        cout << "\nNo path found! Make sure you placed 'S' and 'E'.\n";
+    }
+
+    return 0;
 }
