@@ -1,7 +1,6 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
-#include <vector>
 #include <algorithm>
 
 using namespace std;
@@ -21,7 +20,7 @@ void gotoxy(int x, int y) {
 void DrawMap(){
     gotoxy(0, 0);
     cout << "          ---Build Your MAZE---\n";
-    cout << "WASD : Move | SPACE : Wall | X : Done | Q : START | E : END \n\n" << endl;
+    cout << "WASD : Move | SPACE : Wall | X : Done | Q : START | E : EXIST \n\n" << endl;
 
     for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
@@ -29,7 +28,7 @@ void DrawMap(){
             else if (maze[i][j] == 0) cout << ". "; //empty
             else if (maze[i][j] == 1) cout << "# "; //Wall
             else if (maze[i][j] == 2) cout << "S "; //Start
-            else if (maze[i][j] == 3) cout << "E "; //End
+            else if (maze[i][j] == 3) cout << "E "; //Exist
             else if (maze[i][j] == 4) cout << "* "; //path
             
         }
@@ -41,11 +40,10 @@ void Move(){
     if (_kbhit()){
   key = _getch();
    if (key == 'x' ) Running = false;
-  
    else if (key == 'w' && Y >0) Y--;
    else if (key == 'a' && X >0) X--;
-   else if (key == 's' && Y < height) Y++;
-   else if (key == 'd' && X < width) X++;
+   else if (key == 's' && Y < height-1) Y++;
+   else if (key == 'd' && X < width-1) X++;
     }
 }
 
@@ -104,7 +102,7 @@ bool findPath(int r, int c){
 
     // --- ส่วนแสดงผล Real-time ---
     DrawMap();
-    Sleep(100); // หน่วงเวลา 0.1 วินาทีให้เห็นการขยับ
+    Sleep(100); // หน่วงเวลา
     // ---------------------------
 
     for (int i = 0; i < 4; i++) {
@@ -133,12 +131,13 @@ int main(){
         DrawMap();
         Move();
         Walls();
-        Sleep(30);
+        Sleep(100);
 
     }
+     
+    cout << "AI IS SOLVING\n";
     
-    
-    // ค้นหาจุดเริ่มต้น S เพื่อเริ่มแก้
+    // ค้นหาจุดเริ่มต้น S 
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             if (maze[i][j] == 2) { startR = i; startC = j; break; }
@@ -151,8 +150,12 @@ int main(){
         cout << "\nSUCCESS: AI found the way!\n";
     } else {
         DrawMap();
-        cout << "\nNo path found! Make sure you placed 'S' and 'E'.\n";
+        cout << "\nNo path found! :(\n";
     }
+
+    
+
+
 
     return 0;
 }
