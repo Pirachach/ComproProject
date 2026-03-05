@@ -5,8 +5,8 @@
 
 using namespace std;
 
-const int width =6;
-const int height =6;
+const int width =7;
+const int height =7;
 int X=0, Y=0;
 int maze[height][width] = {0};
 char key;
@@ -17,14 +17,14 @@ void gotoxy(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
 
-void DrawMap(){
+void DrawMap(bool showCursor=true){
     gotoxy(0, 0);
     cout << "          ---Build Your MAZE---\n";
     cout << "WASD : Move | SPACE : Wall | X : Done | Q : START | E : EXIST \n\n" << endl;
 
     for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
-            if (i== Y && j == X) cout << "+ "; //Cursor
+            if (showCursor && i == Y && j == X) cout << "+ "; //Cursor
             else if (maze[i][j] == 0) cout << ". "; //empty
             else if (maze[i][j] == 1) cout << "# "; //Wall
             else if (maze[i][j] == 2) cout << "S "; //Start
@@ -61,7 +61,7 @@ void Walls(){
        if(maze[i][j]==2) maze[i][j] =0;
       }
     }
-    else maze[Y][X] =2;
+    maze[Y][X] =2;
       
     }
   // logic for Exist
@@ -73,7 +73,7 @@ void Walls(){
       }
     }
 
-    else maze[Y][X] =3;
+    maze[Y][X] =3;
         
     }
 
@@ -95,14 +95,16 @@ bool isValid(int r,int c){
 
 
 bool findPath(int r, int c){
+    
+   
     if(maze[r][c] == 3) return true; //Found Exist 
 
     int temp = maze[r][c];
     if (maze[r][c] != 2)maze[r][c] = 4; // ทำเครื่องหมายทางผ่าน (*) ยกเว้นจุดเริ่ม
 
     // --- ส่วนแสดงผล Real-time ---
-    DrawMap();
-    Sleep(100); // หน่วงเวลา
+    DrawMap(false);
+    Sleep(400); // หน่วงเวลา
     // ---------------------------
 
     for (int i = 0; i < 4; i++) {
@@ -117,8 +119,8 @@ bool findPath(int r, int c){
     // Backtrack: ถ้าทางนี้ไม่ใช่ ให้คืนค่าเดิม (ยกเว้นจุดเริ่ม)
     if (temp != 2) {
         maze[r][c] = 0; 
-        DrawMap();   // วาดใหม่เพื่อให้เห็นตอนมันถอยหลัง
-        Sleep(50);
+        DrawMap(false);   // วาดใหม่เพื่อให้เห็นตอนมันถอยหลัง
+        Sleep(200);
     }
     return false;
 }
@@ -128,7 +130,7 @@ bool findPath(int r, int c){
 int main(){
 
     while(Running){
-        DrawMap();
+        DrawMap(true);
         Move();
         Walls();
         Sleep(10);
