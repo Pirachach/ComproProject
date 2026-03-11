@@ -1,16 +1,25 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
-#include <algorithm>
 
 using namespace std;
 
-const int width =7;
-const int height =7;
-int X=0, Y=0;
+const int width =10;
+const int height =10;
+int X=0, Y=0;  //X = column Y = row
 int maze[height][width] = {0};
 char key;
 bool Running=true;
+
+
+void hideCursor() {
+    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO info;
+    info.dwSize = 100;
+    info.bVisible = FALSE;
+    SetConsoleCursorInfo(consoleHandle, &info);
+}
+
 
 void gotoxy(int x, int y) {
     COORD c = { (short)x, (short)y };
@@ -18,9 +27,10 @@ void gotoxy(int x, int y) {
 }
 
 void DrawMap(bool showCursor=true){
-    gotoxy(0, 0);
-    cout << "          ---Build Your MAZE---\n";
-    cout << "WASD : Move | SPACE : Wall | X : Done | Q : START | E : EXIST \n\n" << endl;
+ gotoxy(0,0);
+    cout << "                         ---Build Your MAZE---\n   ";
+    cout << "WASD : Move | SPACE : Wall | Q : START | E : EXIST | X : Done \n\n" << endl;
+ 
 
     for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
@@ -29,12 +39,13 @@ void DrawMap(bool showCursor=true){
             else if (maze[i][j] == 1) cout << "# "; //Wall
             else if (maze[i][j] == 2) cout << "S "; //Start
             else if (maze[i][j] == 3) cout << "E "; //Exist
-            else if (maze[i][j] == 4) cout << "* "; //path
+            else if (maze[i][j] == 4) cout << "o "; //path
             
         }
         cout <<" "<< endl;
     }
-}
+  }
+
 
 void Move(){
     if (_kbhit()){
@@ -64,7 +75,7 @@ void Walls(){
     maze[Y][X] =2;
       
     }
-  // logic for Exist
+  // logic for Exist 
     else if (key == 'e'){
      
         for (int i = 0; i < height; i++){
@@ -126,9 +137,20 @@ bool findPath(int r, int c){
 }
 
 
+    //find E
+bool hasExist(){
+        for(int i =0; i < height; i++){
+            for(int j = 0; j < width; j++){
+                if(maze[i][j] ==3) return true;
+            }
+        }
+        return false;
+    }
+ 
 
-int main(){
 
+int main(){ 
+    hideCursor();
     while(Running){
         DrawMap(true);
         Move();
@@ -140,22 +162,31 @@ int main(){
     
     system("cls");
     
-    // ค้นหาจุดเริ่มต้น S 
+
+    // find S 
     int startR =-1, startC =-1;
+    hasExist();
+
+
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            if (maze[i][j] == 2) { startR = i; startC = j; break; }
+            if (maze[i][j] == 2) {startR = i; startC = j; break;} 
         }
     }
 
-    if (startR != -1 && findPath(startR, startC)) {
+    if (!hasExist()) {
+     cout << "No Exit in map!\n";
+     }
+    else if (startR == -1) {
+     cout << "No Start in map!\n";
+     }
+    else if (findPath(startR, startC)) {
+     cout << "\nSUCCESS: AI found the way!\n";
+     }
+    else {
+     cout << "\nNo path found! :(\n";
+     }
 
-        cout << "\nSUCCESS: AI found the way!\n";
-    } else {
-    
-        cout << "\nNo path found! :(\n";
-    }
-    
     _getch();
   
     return 0;
